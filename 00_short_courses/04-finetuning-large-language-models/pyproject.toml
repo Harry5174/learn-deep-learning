@@ -6,6 +6,13 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "datasets>=4.8.5",
+    "hf-transfer>=0.1.9",
+    "ipykernel>=7.2.0",
     "jsonlines>=4.0.0",
+    "lamini>=2.5.2",
     "pandas>=3.0.2",
+    "python-dotenv>=1.2.1",
+    "setuptools<81",
+    "torch>=2.9.0",
+    "transformers>=4.51.0",
 ]
