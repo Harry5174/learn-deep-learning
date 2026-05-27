@@ -1,102 +1,119 @@
-![LangChain Academy](https://cdn.prod.website-files.com/65b8cd72835ceeacd4449a53/66e9eba1020525eea7873f96_LCA-big-green%20(2).svg)
+# LangChain Academy — Introduction to LangGraph
 
-## Introduction
+A structured workspace for implementing and experimenting with the official **LangChain Academy: Introduction to LangGraph** course. This directory serves as a personal laboratory for exploring multi-agent systems, state management, persistent memory, human-in-the-loop interactions, and deployment architectures.
 
-Welcome to LangChain Academy, Introduction to LangGraph! 
-This is a growing set of modules focused on foundational concepts within the LangChain ecosystem. 
-Module 0 is basic setup and Modules 1 - 5 focus on building in LangGraph, progressively adding more advanced themes.  Module 6 addresses deploying your agents. 
-In each module folder, you'll see a set of notebooks. A link to the LangChain Academy lesson is at the top of each notebook to guide you through the topic. Each module also has a `studio` subdirectory, with a set of relevant graphs that we will explore using the LangGraph API and Studio.
+---
 
-## Setup
+## 📂 Workspace Structure
 
-### Python version
+To balance study materials with hands-on practice, this directory is split into reference materials and personal implementations:
 
-Make sure you're using Python version 3.11, 3.12, or 3.13.
+- **`module-0` to `module-6/` (Course Materials):** The original, official course notebooks and local LangGraph Studio configurations (`/studio` subfolders) downloaded from LangChain.
+- **`local-notebooks/` (Active Learning & Experiments):** Personal, step-by-step reconstructions and customized notebooks where the actual coding, debugging, and experimentation take place.
+  - **`01-module/`:** Simple graphs, routing, basic chains, and foundational LangGraph mechanics.
+    - `00_simple_graph.ipynb`: Hand-coded state graph implementation.
+    - `01_chain.ipynb`: Custom LLM chain invocation and flow control.
+  - **`02-module/`:** (In Progress) State reducers, schemas, and database memory integration.
+
+---
+
+## 🛠️ Course Syllabus
+
+| Module | Core Focus | Key Concepts & Exercises |
+|---|---|---|
+| **Module 0** | **Setup** | Environment configuration, API key setup, and package verification. |
+| **Module 1** | **Build a Graph** | State graphs, nodes, edges, conditional routing, basic agents, memory, and Studio. |
+| **Module 2** | **State and Memory** | Custom state schemas, state reducers, thread-based memory, and token trimming/filtering. |
+| **Module 3** | **Human-in-the-Loop** | Breakpoints, manual state updates, user input queues, time travel, and streaming. |
+| **Module 4** | **Specialized Workflows** | Parallel node execution, Map-Reduce map/reduce architectures, sub-graphs, and agent routers. |
+| **Module 5** | **Memory & Cognitive Architecture** | Long-term memory stores, user profiles, collections, and personalized agent behaviors. |
+| **Module 6** | **Deployment** | LangGraph Cloud, local API server hosting, containerization, and handling double-texting. |
+
+---
+
+## 🚀 Setup & Installation
+
+This project is managed using [`uv`](https://docs.astral.sh/uv/) for fast, reproducible dependency resolution. Make sure you have Python **3.11, 3.12, or 3.13** installed.
+
+### Option A: Using `uv` (Recommended)
+
+1. Sync dependencies and create a virtual environment:
+   ```bash
+   uv sync
+   ```
+2. Activate the environment:
+   ```bash
+   source .venv/bin/activate
+   ```
+3. Start the Jupyter server:
+   ```bash
+   uv run jupyter notebook
+   ```
+
+### Option B: Using standard `pip`
+
+1. Create and activate a standard virtual environment:
+   ```bash
+   python3 -m venv lc-academy-env
+   source lc-academy-env/bin/activate
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run Jupyter:
+   ```bash
+   jupyter notebook
+   ```
+
+---
+
+## 🔑 Environment Variables
+
+Create a `.env` file in the root of this folder (excluded from Git) and populate it with your credentials:
+
+```ini
+# Core LLM provider
+OPENAI_API_KEY="your-openai-key"
+
+# Observability and Tracing
+LANGSMITH_API_KEY="your-langsmith-key"
+LANGSMITH_TRACING_V2="true"
+LANGSMITH_PROJECT="langchain-academy"
+# LANGSMITH_ENDPOINT="https://eu.api.smith.langchain.com" # Uncomment if using EU instance
+
+# Search Tool (used in Module 4)
+TAVILY_API_KEY="your-tavily-key"
 ```
-python3 --version
-```
 
-### Clone repo
-```
-git clone https://github.com/langchain-ai/langchain-academy.git
-$ cd langchain-academy
-```
-Or, if you prefer, you can download a zip file [here](https://github.com/langchain-ai/langchain-academy/archive/refs/heads/main.zip).
+---
 
-### Create an environment and install dependencies
-#### Mac/Linux/WSL
-```
-$ python3 -m venv lc-academy-env
-$ source lc-academy-env/bin/activate
-$ pip install -r requirements.txt
-```
-#### Windows Powershell
-```
-PS> python3 -m venv lc-academy-env
-PS> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-PS> .\lc-academy-env\Scripts\Activate.ps1
-PS> pip install -r requirements.txt
-```
+## 🎨 Local LangGraph Studio
 
-### Running notebooks
-If you don't have Jupyter set up, follow the installation instructions [here](https://jupyter.org/install).
-```
-$ jupyter notebook
-```
+LangGraph Studio offers a custom IDE for visualizing, editing, and running state graphs.
 
-### Setting up env variables
-Briefly going over how to set up environment variables. 
-#### Mac/Linux/WSL
-```
-$ export API_ENV_VAR="your-api-key-here"
-```
-#### Windows Powershell
-```
-PS> $env:API_ENV_VAR = "your-api-key-here"
-```
+### Starting the Studio Server
+To run the local Studio server, navigate to the `/studio` directory of the active module and run the LangGraph CLI:
 
-### Set OpenAI API key
-* If you don't have an OpenAI API key, you can sign up [here](https://openai.com/index/openai-api/).
-*  Set `OPENAI_API_KEY` in your environment 
-
-### Sign up and Set LangSmith API
-* Sign up for LangSmith [here](https://docs.langchain.com/langsmith/create-account-api-key#create-an-account-and-api-key), find out more about LangSmith and how to use it within your workflow [here](https://www.langchain.com/langsmith). 
-*  Set `LANGSMITH_API_KEY`, `LANGSMITH_TRACING_V2="true"` `LANGSMITH_PROJECT="langchain-academy"`in your environment 
-*  If you are on the EU instance also set `LANGSMITH_ENDPOINT`="https://eu.api.smith.langchain.com" as well.
-
-### Set up Tavily API for web search
-
-* Tavily Search API is a search engine optimized for LLMs and RAG, aimed at efficient, 
-quick, and persistent search results. 
-* You can sign up for an API key [here](https://tavily.com/). 
-It's easy to sign up and offers a very generous free tier. Some lessons (in Module 4) will use Tavily. 
-
-* Set `TAVILY_API_KEY` in your environment.
-
-### Set up Studio
-
-* Studio is a custom IDE for viewing and testing agents.
-* Studio can be run locally and opened in your browser on Mac, Windows, and Linux.
-* See documentation [here](https://docs.langchain.com/langsmith/studio#local-development-server) on the local Studio development server. 
-* Graphs for LangGraph Studio are in the `module-x/studio/` folders for module 1-5.
-* To start the local development server, make sure your virtual environment is active and run the following command in your terminal in the `/studio` directory in each module:
-
-```
+```bash
+cd module-1/studio  # Example for Module 1
 langgraph dev
 ```
 
-You should see the following output:
-```
-- 🚀 API: http://127.0.0.1:2024
-- 🎨 Studio UI: https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
-- 📚 API Docs: http://127.0.0.1:2024/docs
+Your terminal will display access endpoints:
+```text
+🚀 API: http://127.0.0.1:2024
+🎨 Studio UI: https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+📚 API Docs: http://127.0.0.1:2024/docs
 ```
 
-Open your browser and navigate to the Studio UI: `https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024`.
+Open your browser and navigate to the **Studio UI** link.
 
-* To use Studio, you will need to create a .env file with the relevant API keys
-* Run this from the command line to create these files for module 1 to 5, as an example:
-```
+### Distributing environment keys to Studio folders
+To make sure the local Studio container has access to your credentials, copy your `.env` configuration to the target module's studio folder:
+
+```bash
+# Helper loop to copy and configure envs for Modules 1-5
 for i in {1..5}; do
   cp module-$i/studio/.env.example module-$i/studio/.env
   echo "OPENAI_API_KEY=\"$OPENAI_API_KEY\"" > module-$i/studio/.env
