@@ -10,6 +10,7 @@ from langchain_openai import ChatOpenAI
 
 from langgraph.constants import Send
 from langgraph.graph import END, MessagesState, START, StateGraph
+from langgraph.types import interrupt
 
 ### LLM
 
@@ -106,8 +107,28 @@ def create_analysts(state: GenerateAnalystsState):
     return {"analysts": analysts.analysts}
 
 def human_feedback(state: GenerateAnalystsState):
-    """ No-op node that should be interrupted on """
-    pass
+    """Interrupt for human review before launching interviews."""
+
+    analysts = [
+        analyst.model_dump() if hasattr(analyst, "model_dump") else analyst
+        for analyst in state["analysts"]
+    ]
+    feedback = interrupt(
+        {
+            "message": "Review the generated analysts. Type 'approve' to begin interviews, or provide feedback to regenerate them.",
+            "analysts": analysts,
+        }
+    )
+
+    if isinstance(feedback, dict):
+        feedback = (
+            feedback.get("human_analyst_feedback")
+            or feedback.get("feedback")
+            or feedback.get("response")
+            or ""
+        )
+
+    return {"human_analyst_feedback": str(feedback or "approve").strip()}
 
 # Generate analyst question
 question_instructions = """You are an analyst tasked with interviewing an expert to learn about a specific topic. 
@@ -186,10 +207,13 @@ def search_wikipedia(state: InterviewState):
     # Search query
     structured_llm = llm.with_structured_output(SearchQuery)
     search_query = structured_llm.invoke([search_instructions]+state['messages'])
-    
+
     # Search
-    search_docs = WikipediaLoader(query=search_query.search_query, 
-                                  load_max_docs=2).load()
+    try:
+        search_docs = WikipediaLoader(query=search_query.search_query, 
+                                      load_max_docs=2).load()
+    except Exception:
+        return {"context": []}
 
      # Format
     formatted_search_docs = "\n\n---\n\n".join(
@@ -380,7 +404,15 @@ def initiate_all_interviews(state: ResearchGraphState):
     """ Conditional edge to initiate all interviews via Send() API or return to create_analysts """    
 
     # Check if human feedback
-    human_analyst_feedback=state.get('human_analyst_feedback','approve')
+    human_analyst_feedback=state.get('human_analyst_feedback')
+    if isinstance(human_analyst_feedback, dict):
+        human_analyst_feedback = (
+            human_analyst_feedback.get("human_analyst_feedback")
+            or human_analyst_feedback.get("feedback")
+            or human_analyst_feedback.get("response")
+        )
+    human_analyst_feedback = str(human_analyst_feedback or "").strip()
+
     if human_analyst_feedback.lower() != 'approve':
         # Return to create_analysts
         return "create_analysts"
@@ -544,4 +576,4 @@ builder.add_edge(["write_conclusion", "write_report", "write_introduction"], "fi
 builder.add_edge("finalize_report", END)
 
 # Compile
-graph = builder.compile(interrupt_before=['human_feedback'])
+graph = builder.compile()
